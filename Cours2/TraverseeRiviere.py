@@ -9,7 +9,6 @@ import matplotlib.pyplot as plt
 def main():
     print("Hello from cours2!")
 
-
 if __name__ == "__main__":
     main()
 
@@ -65,6 +64,20 @@ def sontVoisins(etat1 : Etat, etat2 : Etat) -> bool:
     return True
 
 def estValide(etat : Etat) -> bool:
+    """
+    La foncion estValide prend un Etat en paramètre et renvoie True si l'état est valide et False sinon.
+    Un état est valide si ni le mouton ni le chou ne sont mangés.
+
+    Example :
+    >>>etatV = Etat(
+        berger="droite",
+        mouton="droite",
+        chou="gauche",
+        loup="droite"
+    )
+    >>>estValide(etatV)
+    True
+    """
     if etat.mouton == etat.loup and etat.mouton != etat.berger:
         return False
     if etat.mouton == etat.chou and etat.mouton != etat.berger:

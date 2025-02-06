@@ -8,3 +8,6 @@ etat1 = Etat(
 )
 
 print(estValide(etat1))
+print(etats)
+listerEtats()
+print(etats)
