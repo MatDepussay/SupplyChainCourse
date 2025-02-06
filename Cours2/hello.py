@@ -1,6 +1,10 @@
-def main():
-    print("Hello from cours2!")
+from TraverseeRiviere import *
 
+etat1 = Etat(
+    berger="gauche",
+    mouton="droite",
+    chou="gauche",
+    loup="droite"
+)
 
-if __name__ == "__main__":
-    main()
+print(estValide(etat1))
