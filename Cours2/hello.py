@@ -1,7 +1,6 @@
-from traverserriviere import *
+def main():
+    print("Hello from cours2!")
 
-etat1 = Etat(berger="gauche", loup="gauche", mouton="droite", chou="gauche")
 
-print(estValide(etat1))
-print(etats)
-list
+if __name__ == "__main__":
+    main()
