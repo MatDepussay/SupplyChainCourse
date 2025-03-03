@@ -43,3 +43,14 @@ def test_mouvementValide():
     assert not PlateauTest4.mouvementValide([(0,3),(3,3)]) #saut de 2
     assert not PlateauTest4.mouvementValide([(0,0),(0,2)])
     assert not PlateauTest4.mouvementValide([(0,2),(0,0)])
+
+PlateauTest1 = Plateau([    [1,1,1,1,1,1,1],
+                            [1,1,1,1,1,1,1],
+                            [1,1,1,1,1,1,1],
+                            [1,1,1,0,1,1,1],
+                            [1,1,1,1,1,1,1],
+                            [1,1,1,1,1,1,1],
+                            [1,1,1,1,1,1,1]])
+
+def test_coupsPossibles():
+    assert len(PlateauTest1.coupsPossibles()) == 4
