@@ -1,0 +1,17 @@
+[project]
+name = "projetsolitaire"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "pyinstrument>=5.0.1",
+]
+
+[dependency-groups]
+dev = [
+    "pytest-cov>=6.0.0",
+]
+
+[tool.uv.workspace]
+members = ["botSolitaire"]
