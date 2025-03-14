@@ -7,17 +7,23 @@ loadListeLignes()
 
 loadListeGare()
 
+
+
 gareDepart = None
 gareArrivee = None
 
 for gare in ListeGares:
     gare.loadLignes()
     gare.loadVoisins()
-    if(gare.id == 66):
+    if(gare.nom == "Bercy"):
         gareDepart = gare
-    if(gare.id == 86):
+    if(gare.nom == "Nation"):
         gareArrivee = gare
 
-print(ListeLignes[0])
+
 print(gareDepart)
 print(gareArrivee)
+
+print("Chemin : ")
+
+gareDepart.cheminOptimalVers(gareArrivee)

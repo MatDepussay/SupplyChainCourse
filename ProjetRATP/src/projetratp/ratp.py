@@ -21,6 +21,9 @@ class Gare(object):
     def __neq__(self, other):
         return self.id != other.id
 
+    def __hash__(self):
+        return hash(str(id))
+
     def loadLignes(self) -> None:
         if( len(data.ListeLignes) == 0):
             raise ValueError("Charger la liste des lignes avant d'executer isVoisin.")
@@ -35,15 +38,32 @@ class Gare(object):
             for ligne in data.ListeLignes:
                 if (autreGare.id in ligne.gares and self.id in ligne.gares):
                     if abs(ligne.gares.index(self.id) - ligne.gares.index(autreGare.id)) == 1:
-                        self.voisins.append(autreGare)
+                        if autreGare not in self.voisins:
+                            self.voisins.append(autreGare)
 
     def isVoisin(self, autreGare) -> bool:
         return autreGare in self.voisins
 
-    def calculerTrajetVoisin(self,autreGare):
-        if self.isVoisin(autreGare):
+    def calculerTrajetVoisin(self,autreGare,derniereGare):
+        if not self.isVoisin(autreGare) :
+            raise ValueError("Les gares doivent être voisines.")
+        if(autreGare == derniereGare):
             return 2
-        raise ValueError("Les gares doivent être voisines.")
+        LigneActuelles = []
+        LignePrecedentes = []
+        for ligne2 in autreGare.lignes:
+            for ligne1 in self.lignes:
+                if(ligne1 == ligne2):
+                    LigneActuelles.append(ligne1)
+
+            for ligne3 in derniereGare.lignes:
+                if(ligne3 == ligne2):
+                    LignePrecedentes.append(ligne3)
+
+        for ligne in LignePrecedentes:
+            if ligne in LigneActuelles:
+                return 2
+        return 7
 
     def cheminOptimalVers(self, autreGare):
         DerniereGare = dict()
@@ -51,14 +71,20 @@ class Gare(object):
         for gare in data.ListeGares:
             DistancesToSelf[gare] = float("inf")
         DistancesToSelf[self] = 0
+        DerniereGare[self] = self
         Valides = [self]
-        Candidats = self.voisins
+        Candidats = list(self.voisins)
+
+        compteur = 0
         while autreGare not in Valides:
+            if len(Candidats) == 0:
+                raise ValueError("Trajet impossible")
+            compteur += 1
             #On calcules les distances avec les candidats :
             for gare_candidat in Candidats:
                 for gare_valide in Valides:
                     if(gare_valide.isVoisin(gare_candidat)):
-                        DistancePotentielle = DistancesToSelf[gare_valide] + gare_valide.calculerTrajetVoisin(gare_candidat)
+                        DistancePotentielle = DistancesToSelf[gare_valide] + gare_candidat.calculerTrajetVoisin(gare_valide,DerniereGare[gare_valide])
                         if DistancePotentielle < DistancesToSelf[gare_candidat]:
                             DistancesToSelf[gare_candidat] = DistancePotentielle
                             DerniereGare[gare_candidat] = gare_valide
@@ -84,8 +110,8 @@ class Gare(object):
         while Chemin[-1] != self:
             Chemin.append(DerniereGare[Chemin[-1]])
 
-        for gare in Chemin:
-            print(gare)
+        Chemin.reverse()
+        return (Chemin, DistancesToSelf[Chemin[-1]])
 
 
 
