@@ -1,5 +1,6 @@
 from typing import Tuple, List
-
+import scipy as sp
+import numpy as np
 
 
 type Transformation = List[Tuple(str,str), int]
@@ -27,13 +28,40 @@ class Entreprise(object):
             S+= transfo[0][0] + " --> " + transfo[0][1] + "( max : "+ str(transfo[1])+")\n"
         return S
 
-ListeMatieres : List[str] = ["Minerai de fer", "Acier brut",
-                "Acier raffiné", "Quincaillerie",
-                "Plaques d'acier", "Pièces automobiles"]
+ListeMatieres : List[str]
 
-ListeEntreprises : List[Entreprise] = [Entreprise("A",[[("Minerai de fer", "Acier brut"),530]]),
-                                        Entreprise("B",[[("Minerai de fer", "Acier raffiné"), 4000]])]
+ListeEntreprises : List[Entreprise]
+
+listeTransformations : List[Transformation]
+
+def calculerFlotMaximal(matiere_source, matiere_puits):
+
+    matriceAdjacence = [[0 for _ in ListeMatieres] for _ in ListeMatieres]
+    for transfo in listeTransformations:
+        for i in range(len(ListeMatieres)):
+            if(ListeMatieres[i] == transfo[0][0]):
+                for j in range(len(ListeMatieres)):
+                    if(ListeMatieres[j] == transfo[0][1]):
+                        matriceAdjacence[i][j] = transfo[1]
+                        break
+                break
 
 
+    MatriceCsArray = sp.sparse.csr_array(matriceAdjacence)
 
-CapaciteDeTransformation = [[("Minerai de fer","Acier brut"),530]]
+    index_source = 0
+    for i in range(len(ListeMatieres)):
+        if(ListeMatieres[i] == matiere_source):
+            index_source = i
+            break
+
+    index_puits = 0
+    for i in range(len(ListeMatieres)):
+        if(ListeMatieres[i] == matiere_puits):
+            index_puits = i
+            break
+
+    result = sp.sparse.csgraph.maximum_flow(MatriceCsArray,index_source,index_puits)
+
+    print(result)
+    return(result.flow_value)
