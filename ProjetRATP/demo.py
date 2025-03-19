@@ -6,14 +6,21 @@ import matplotlib.pyplot as plt # type: ignore
 loadListeGare()
 
 LoadListeLignes()
+gareDepart =None
+gareArrivee = None
 
 
-print(ListeLignes)
+#print(ListeLignes)
 
 for gare in ListeGare:
     gare.loadLignes()
     gare.loadVoisins()
-    print(gare)
+    if gare.id == 66:
+        gareDepart = gare
+    if gare.id == 86:
+        gareArrivee = gare
+    #print(gare)
+
 
 
 #On créé le graphe
