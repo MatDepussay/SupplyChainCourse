@@ -3,6 +3,9 @@ import networkx as nx # type: ignore
 import matplotlib.pyplot as plt # type: ignore
 
 
+loadListeLignes()
+print(ListeLignes)
+
 loadListeGare()
 
 LoadListeLignes()
@@ -28,7 +31,7 @@ G = nx.Graph() #Non-orienté
 #G = nx.DiGraph() #Orienté
 
 #On créé les noeuds
-G.add_nodes_from (ListeGare)
+G.add_nodes_from (ListeGares)
 
 #On ajoute les arrêtes entre les noeuds
 ListeArretes = []
@@ -42,6 +45,7 @@ pos = dict()
 labels = dict()
 for gare in ListeGare:
     pos[gare] = [gare.x,gare.y]
+    labels[gare] = gare.nom
     labels[gare] = gare.nom
 #On dessine le graphe
 nx.draw(G, pos, with_labels=True, labels=labels)
