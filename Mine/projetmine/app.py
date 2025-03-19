@@ -1,8 +1,7 @@
 from projetmine import reseau, data
-
-
 def run():
-    data.load_entrperises()
+    data.load
+
     for gare in ListeGares:
         gare.loadLignes()
         gare.loadVoisins()

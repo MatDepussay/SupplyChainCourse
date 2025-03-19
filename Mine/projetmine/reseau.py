@@ -17,8 +17,12 @@ class Entreprise:
                 if transfo[0]==tf[0]:
                     self.transformation[i]=transfo[1]
                     tf[1]= transfo[1]
+        else:
+            self.transformation.append(transfo)
 
-
+    def __eq__(self, other):
+        return self.nom==other.nom
+    
     def __str__(self):
         S = "L'entreprise "+self.nom+" produit\n"
         for transfo in self.transformation:
