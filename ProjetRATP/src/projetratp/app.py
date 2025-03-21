@@ -1,6 +1,9 @@
 from projetratp.sqlimport import *
 import projetratp.affichage as affich
 
+if __name__ == "__main__":
+    run()
+
 def run():
     loadListeLignes()
     loadListeGare()
