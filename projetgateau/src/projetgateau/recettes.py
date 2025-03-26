@@ -6,7 +6,11 @@ class sousProduit(object):
     def __init__(self, nom:str):
         self.nom :str = nom
 
-
+    def __eq__(self, autre):
+        return self.nom == autre.nom
+    
+    def __hash__(self):
+        return hash(self.nom)
 
 class etape(object):
 
@@ -19,3 +23,9 @@ class etape(object):
         self.active: bool = etapeActive
         self.sousProduitFinal: sousProduit = produitFinal
         self.sousProduitNecessaires : List[sousProduit] = sousProduitNecessaires
+
+class recette(object):
+    pass
+
+class planing(object):
+    pass

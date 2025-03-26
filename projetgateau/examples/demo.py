@@ -1,4 +1,5 @@
 from projetgateau.recettes import *
+from graphlib import *
 
 ListeNomsSousProduits = ["Fraises coupées","Pâte à tarte", "Pâte à chou", "Pâte à chou reposée", "Choux vides",
                             "Choux à la crème","Crème patissière", "Pâte à tarte cuite",
@@ -24,3 +25,15 @@ ListeEtapes = [
         etape("Dressage choux", produitFinal=sousProduit("Choux à la crème"), duree = 20,
                     sousProduitNecessaires=[sousProduit("Choux vides"), sousProduit("Crème patissière")])
                     ]
+graph =dict()
+for sousProduits in ListeSousProduits:
+        L=[]
+        for step in ListeEtapes:
+                if(step.sousProduitFinal == sousProduits):
+                        L+= [produits for produits in step.sousProduitNecessaires if produits not in L]
+        graph[sousProduits] = L
+ts=TopologicalSorter(graph)
+print("Ordre possible : ")
+for prod in tuple(ts.static_order()):
+        print(prod.nom)
+

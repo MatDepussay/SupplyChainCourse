@@ -7,7 +7,10 @@ authors = [
     { name = "Theo Girard", email = "girard-theo@orange.fr" }
 ]
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "graphlib>=0.9.5",
+    "typing>=3.10.0.0",
+]
 
 [project.scripts]
 projetgateau = "projetgateau:main"
