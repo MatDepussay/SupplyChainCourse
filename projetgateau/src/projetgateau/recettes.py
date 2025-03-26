@@ -91,18 +91,45 @@ class planning(object):
             graph[sousProduit] = list(L) #<---
         ts = TopologicalSorter(graph)
         triTopo = list(ts.static_order())
-        self.planning = []
-        
+        self.planning = [[],[]] + [[] for _ in range (nb_commis)]
+        tempsActuel =0
         for prod in triTopo:
             for step in self.listeEtapes:
                 if step.sousProduitFinal == prod:
-                    self.planning.append(step)
+                        for prerequis in step.sousProduitNecessaires:
+                            for  ligne2 in self.planning:
+                                for step2 in ligne2:
+                                    for etapeEnCours in ligne2:
+                                        if prerequis == etapeEnCours.etape.sousProduitFinal:
+                                            if etapeEnCours.tps_fin>tempsActuel:
+                                                tempsActuel = etapeEnCours.tps_fin
+                        if step.besoinFour:
+                            if len(self.planning[0])!=0:
+                                if (self.planning[0][-1].tps_fin>tempsActuel):
+                                    tempsActuel = self.planning[0][-1].tps_fin
+                        
+                            etapeTempo = etapeTemporelle(step, tps_debut=tempsActuel)
+                            self.planning[0].append(etapeTempo)
+                        elif not step.active:
+                            etapeTempo = etapeTemporelle(step, tps_debut=tempsActuel)
+                            self.planning[1].append(etapeTempo)
+                        else:
+                            if len(self.planning[2])!=0:
+                                if (self.planning[2][-1].tps_fin>tempsActuel):
+                                    tempsActuel = self.planning[2][-1].tps_fin
+                            etapeTempo = etapeTemporelle(step, tps_debut=tempsActuel)
+                            self.planning[2].append(etapeTempo)
+                        
 
     def __str__(self):
         S = "Ordre possible : \n"
-        temps = 0
-        for i, step in enumerate(self.planning):
-            S+= str(i+1) + ") "+ step.nom + ", duree : "+ str(step.duree) + " min\n"
-            temps += step.duree
-        S+= "Temps total : "+str(temps)+" min."
+        maxTemps = 0
+        for ligne in self.planning:
+            temps = 0
+            for i, step in enumerate(ligne):
+                S+= ") "+ step.etape.nom + ", duree : "+ str(step.etape.duree) + " min\n"
+                temps += step.etape.duree
+            if temps>maxTemps:
+                maxTemps = temps
+        S+= "Temps total : "+str(maxTemps)+" min."
         return S
