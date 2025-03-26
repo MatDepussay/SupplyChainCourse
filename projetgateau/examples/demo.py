@@ -7,7 +7,7 @@ ListeNomsSousProduits = ["Fraises coupées","Pâte à tarte", "Pâte à chou", "
 
 ListeSousProduits = [sousProduit(nom) for nom in ListeNomsSousProduits]
 
-ListeEtapes = [
+EtapesTarteAuFraise = [
         etape("Couper les fraises", produitFinal=sousProduit("Fraises coupées"), duree = 10),
         etape("Préparer crème patissière", produitFinal=sousProduit("Crème patissière"), duree = 30),
         etape("Prep pâte à tarte", produitFinal=sousProduit("Pâte à tarte"), duree =5),
@@ -16,6 +16,8 @@ ListeEtapes = [
                     besoinFour = True, etapeActive = False, sousProduitNecessaires=[sousProduit("Pâte à tarte")]),
         etape("Attendre pâte tarte froide", produitFinal=sousProduit("Pâte à tarte cuite et froide"), duree = 30,
                     etapeActive = False, sousProduitNecessaires=[sousProduit("Pâte à tarte cuite")]),
+]
+EtapesChoux=[
         etape("Dressage tarte aux fraises", produitFinal=sousProduit("Tarte aux fraises"), duree = 10,
                     sousProduitNecessaires=[sousProduit("Pâte à tarte cuite et froide"), sousProduit("Fraises coupées"), sousProduit("Crème patissière")]),
         etape("Faire reposer pâte chou", produitFinal=sousProduit("Pâte à chou reposée"), duree = 60,
@@ -25,15 +27,10 @@ ListeEtapes = [
         etape("Dressage choux", produitFinal=sousProduit("Choux à la crème"), duree = 20,
                     sousProduitNecessaires=[sousProduit("Choux vides"), sousProduit("Crème patissière")])
                     ]
-graph =dict()
-for sousProduits in ListeSousProduits:
-        L=[]
-        for step in ListeEtapes:
-                if(step.sousProduitFinal == sousProduits):
-                        L+= [produits for produits in step.sousProduitNecessaires if produits not in L]
-        graph[sousProduits] = L
-ts=TopologicalSorter(graph)
-print("Ordre possible : ")
-for prod in tuple(ts.static_order()):
-        print(prod.nom)
 
+RecetteTarteAuxFraises = recette(EtapesTarteAuFraise)
+RecetteChoux = recette(EtapesChoux)
+
+MonPlanning = planing(  (RecetteChoux, RecetteTarteAuxFraises) )
+MonPlanning.genererplaning()
+print(MonPlanning)
