@@ -57,6 +57,13 @@ class recette(object):
                     return False
         return True
 
+class etapeTemporelle(etape):
+
+    def __init__(self, Etape, tps_debut):
+        self.etape = Etape
+        self.tps_debut = tps_debut
+        self.tps_fin = self.tps_debut + self.etape.duree
+
 
 class planning(object):
 
@@ -71,9 +78,9 @@ class planning(object):
         for recipe in self.listeRecette:
             self.listeEtapes += [ step for step in recipe.listeEtapes if step not in self.listeEtapes]
 
-        self.planning : List[etape] = []
+        self.planning : List[List[etapeTemporelle]] = []
 
-    def genererPlanning(self):
+    def genererPlanning(self, nb_commis=1):
 
         graph = dict()
         for sousProduit in self.listeSousProduits:
@@ -85,6 +92,7 @@ class planning(object):
         ts = TopologicalSorter(graph)
         triTopo = list(ts.static_order())
         self.planning = []
+        
         for prod in triTopo:
             for step in self.listeEtapes:
                 if step.sousProduitFinal == prod:
