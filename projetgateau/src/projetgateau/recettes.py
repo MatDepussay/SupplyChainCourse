@@ -1,6 +1,7 @@
 
 from typing import List
 from graphlib import *
+
 class sousProduit(object):
 
     def __init__(self, nom:str):
@@ -8,9 +9,10 @@ class sousProduit(object):
 
     def __eq__(self, autre):
         return self.nom == autre.nom
-    
+
     def __hash__(self):
         return hash(self.nom)
+
 
 class etape(object):
 
@@ -24,49 +26,75 @@ class etape(object):
         self.sousProduitFinal: sousProduit = produitFinal
         self.sousProduitNecessaires : List[sousProduit] = sousProduitNecessaires
 
+    def __eq__(self, autre):
+        if self.sousProduitFinal == autre.sousProduitFinal and self.sousProduitNecessaires == autre.sousProduitNecessaires:
+            return True
+        return False
+
+
 class recette(object):
-    def __init__(self, listeEtapes): 
+    def __init__(self, listeEtapes):
         self.listeEtapes:List[etape] = listeEtapes
+
         self.listeSousProduits:List[sousProduit] = []
         for step in self.listeEtapes:
             if step.sousProduitFinal not in self.listeSousProduits:
                 self.listeSousProduits.append(step.sousProduitFinal)
-    def verifierValide(self):
-        listePrerequis = []
+
+    def verifierValidite(self) -> bool:
+        """
+        Vérifie si les sous-produits necessaires pour la recette peuvent être obtenu via une étape de la recette.
+
+        Paramètres :
+        - Aucun
+
+        Renvoie :
+        - booléen : Vrai si la recette est auto-suffisante, faux sinon.
+        """
         for step in self.listeEtapes:
             for prerequis in step.sousProduitNecessaires:
                 if prerequis not in self.listeSousProduits:
                     return False
         return True
 
-        
 
+class planning(object):
 
-class planing(object):
     def __init__(self, listeRecette):
-        self.listeRecettes = listeRecette
-        self.listeSousProduits = []
-        for recipe in self.listeRecettes:
-            self.listeSousProduits += [prod for prod in recipe.listeSousProduits if prod not in self.listeSousProduits]
-            self.listeSousProduits = []
-        self.listeEtapes = []
-        for recipe in self.listeRecettes:
-            self.listeEtapes += [step for step in recipe.listeEtapes if step not in self.listeEtapes]
-        self.planing :List[etape]= []
-    
-    def genererplaning(self):
-        graph =dict()
-        for sousProduits in self.listeSousProduits:
-            L=[]
-            for step in self.listeEtapes:
-                if(step.sousProduitFinal == sousProduits):
-                        L += [produits for produits in step.sousProduitNecessaires if produits not in L]
-        graph[sousProduits] = list(L)
-        ts=TopologicalSorter(graph)
-        self.planing = list(ts.static_order())
-    def __str__(self):
-        S="Ordre possible : "
-        for i, prod in enumerate(self.planing):
-            S+=str(i=1)+ ") "+prod.nom+ "\n"
-        return S
+        self.listeRecette:List[recette] = listeRecette
 
+        self.listeSousProduits = []
+        for recipe in self.listeRecette:
+            self.listeSousProduits += [ prod for prod in recipe.listeSousProduits if prod not in self.listeSousProduits]
+
+        self.listeEtapes = []
+        for recipe in self.listeRecette:
+            self.listeEtapes += [ step for step in recipe.listeEtapes if step not in self.listeEtapes]
+
+        self.planning : List[etape] = []
+
+    def genererPlanning(self):
+
+        graph = dict()
+        for sousProduit in self.listeSousProduits:
+            L = []
+            for step in self.listeEtapes:
+                if(step.sousProduitFinal == sousProduit):
+                    L += [ produits for produits in step.sousProduitNecessaires if produits not in L]
+            graph[sousProduit] = list(L) #<---
+        ts = TopologicalSorter(graph)
+        triTopo = list(ts.static_order())
+        self.planning = []
+        for prod in triTopo:
+            for step in self.listeEtapes:
+                if step.sousProduitFinal == prod:
+                    self.planning.append(step)
+
+    def __str__(self):
+        S = "Ordre possible : \n"
+        temps = 0
+        for i, step in enumerate(self.planning):
+            S+= str(i+1) + ") "+ step.nom + ", duree : "+ str(step.duree) + " min\n"
+            temps += step.duree
+        S+= "Temps total : "+str(temps)+" min."
+        return S
