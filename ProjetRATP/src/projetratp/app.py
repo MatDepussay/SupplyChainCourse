@@ -1,6 +1,9 @@
 from projetmine import reseau, data
 
 
+if __name__ == "__main__":
+    run()
+
 def run():
     data.load_entrperises()
     for gare in ListeGares:
