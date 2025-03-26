@@ -98,11 +98,10 @@ class planning(object):
                 if step.sousProduitFinal == prod:
                         for prerequis in step.sousProduitNecessaires:
                             for  ligne2 in self.planning:
-                                for step2 in ligne2:
-                                    for etapeEnCours in ligne2:
-                                        if prerequis == etapeEnCours.etape.sousProduitFinal:
-                                            if etapeEnCours.tps_fin>tempsActuel:
-                                                tempsActuel = etapeEnCours.tps_fin
+                                for etapeEnCours in ligne2:
+                                    if prerequis == etapeEnCours.etape.sousProduitFinal:
+                                        if etapeEnCours.tps_fin>tempsActuel:
+                                            tempsActuel = etapeEnCours.tps_fin
                         if step.besoinFour:
                             if len(self.planning[0])!=0:
                                 if (self.planning[0][-1].tps_fin>tempsActuel):
@@ -127,9 +126,9 @@ class planning(object):
         for ligne in self.planning:
             temps = 0
             for i, step in enumerate(ligne):
-                S+= ") "+ step.etape.nom + ", duree : "+ str(step.etape.duree) + " min\n"
-                temps += step.etape.duree
+                S+= "[ "+ str(step.tps_debut)+ " - " +step.etape.nom + " - "+ str(step.tps_fin) + " min" "]"
+            S+= "\n"
             if temps>maxTemps:
-                maxTemps = temps
+                maxTemps = ligne[-1].tps_fin
         S+= "Temps total : "+str(maxTemps)+" min."
         return S
