@@ -57,6 +57,13 @@ class recette(object):
                     return False
         return True
 
+class etapeTemporelle(object):
+
+    def __init__(self, Etape : etape, tps_debut : int):
+        self.etape = Etape
+        self.tps_debut = tps_debut
+        self.tps_fin = self.tps_debut + self.etape.duree
+
 
 class planning(object):
 
@@ -71,9 +78,9 @@ class planning(object):
         for recipe in self.listeRecette:
             self.listeEtapes += [ step for step in recipe.listeEtapes if step not in self.listeEtapes]
 
-        self.planning : List[etape] = []
+        self.planning : List[List[etapeTemporelle]] = []
 
-    def genererPlanning(self):
+    def genererPlanning(self, nb_commis = 1):
 
         graph = dict()
         for sousProduit in self.listeSousProduits:
@@ -84,17 +91,60 @@ class planning(object):
             graph[sousProduit] = list(L) #<---
         ts = TopologicalSorter(graph)
         triTopo = list(ts.static_order())
-        self.planning = []
+
+
+        self.planning = [[],[]] + [[] for _ in range(nb_commis)]
+        """
+        [0] -> Ligne du four
+        [1] -> Attente
+        [2] -> Commis numéro 1
+        [3] -> Commis numéro 2
+        ...
+        """
+        tempsActuel = 0
         for prod in triTopo:
             for step in self.listeEtapes:
                 if step.sousProduitFinal == prod:
-                    self.planning.append(step)
+                    #Test prerequis satisfaits
+
+                    for prerequis in step.sousProduitNecessaires:
+                        PrerequisTrouve = False
+                        for ligne2 in self.planning:
+                            for etapeEnCours in ligne2:
+                                if prerequis == etapeEnCours.etape.sousProduitFinal:
+                                    PrerequisTrouve = True
+                                    if(etapeEnCours.tps_fin > tempsActuel):
+                                        tempsActuel = etapeEnCours.tps_fin
+                        if(not PrerequisTrouve):
+                            print("Probleme")
+
+                    if step.besoinFour:
+                        #Test si four disponible
+                        if len(self.planning[0]) != 0:
+                            if(self.planning[0][-1].tps_fin > tempsActuel):
+                                tempsActuel = self.planning[0][-1].tps_fin
+
+                        etapeTempo = etapeTemporelle(step,tps_debut =tempsActuel)
+                        self.planning[0].append(etapeTempo)
+                    elif not step.active:
+                        etapeTempo = etapeTemporelle(step,tps_debut =tempsActuel)
+                        self.planning[1].append(etapeTempo)
+                    else:
+                        if len(self.planning[2]) != 0:
+                            if(self.planning[2][-1].tps_fin > tempsActuel):
+                                tempsActuel = self.planning[2][-1].tps_fin
+                        etapeTempo = etapeTemporelle(step,tps_debut =tempsActuel)
+                        self.planning[2].append(etapeTempo)
+
 
     def __str__(self):
         S = "Ordre possible : \n"
-        temps = 0
-        for i, step in enumerate(self.planning):
-            S+= str(i+1) + ") "+ step.nom + ", duree : "+ str(step.duree) + " min\n"
-            temps += step.duree
-        S+= "Temps total : "+str(temps)+" min."
+        maxTemps = 0
+        for ligne in self.planning:
+            for i, step in enumerate(ligne):
+                S+= "[ "+ str(step.tps_debut) + " - "+ step.etape.nom + " - "+ str(step.tps_fin) + " ]"
+            S += "\n"
+            if(ligne[-1].tps_fin > maxTemps):
+                maxTemps = ligne[-1].tps_fin
+        S+= "Temps total : "+str(maxTemps)+" min."
         return S
